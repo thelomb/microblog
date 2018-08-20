@@ -110,3 +110,6 @@ status/
 
 #db
 *.db
+
+#flask
+.flaskenv
