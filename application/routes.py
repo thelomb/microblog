@@ -1,27 +1,43 @@
 from flask import render_template, flash, redirect, url_for, request
 from application import app, db
-from application.forms import LoginForm, RegistrationForm, EditProfileForm
+from application.forms import (LoginForm, RegistrationForm, EditProfileForm,
+                               PostForm)
 from flask_login import current_user, login_user, logout_user, login_required
 from application.models import User, Post
 from werkzeug.urls import url_parse
 from datetime import datetime
 
 
-@app.route('/')
-@app.route('/index')
+@app.before_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.utcnow()
+        db.session.commit()
+
+
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
 @login_required
 def index():
-    posts = [
-        {
-            'author': {'username': 'Bob'},
-            'body': 'Beautiful day in Portland!'
-        },
-        {
-            'author': {'username': 'Susan'},
-            'body': 'The Avengers movie was so cool'
-        }
-    ]
-    return render_template('index.html', title='Home', posts=posts)
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post(body=form.post.data, author=current_user)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your post is now published')
+        return redirect(url_for('index'))
+    posts = current_user.followed_posts().all()
+    # [
+    #     {
+    #         'author': {'username': 'Bob'},
+    #         'body': 'Beautiful day in Portland!'
+    #     },
+    #     {
+    #         'author': {'username': 'Susan'},
+    #         'body': 'The Avengers movie was so cool'
+    #     }
+    # ]
+    return render_template('index.html', title='Home', posts=posts, form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -127,8 +143,8 @@ def unfollow(username):
     return redirect(url_for('user', username=username))
 
 
-@app.before_request
-def before_request():
-    if current_user.is_authenticated:
-        current_user.last_seen = datetime.utcnow()
-        db.session.commit()
+@app.route('/explore')
+@login_required
+def explore():
+    posts = Post.query.order_by(Post.timestamp.desc()).all()
+    return render_template('index.html', title='Explore', posts=posts)
