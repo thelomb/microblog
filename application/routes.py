@@ -158,7 +158,8 @@ def explore():
     prev_url = url_for('explore', page=posts.prev_num) \
         if posts.has_prev else None
     return render_template('index.html', title='Explore', posts=posts.items,
-                           next_url=next_url, prev_url=prev_url)
+                           next_url=next_url, prev_url=prev_url,
+                           pages=posts.pages)
 
 
 @app.route('/reset_password_request', methods=['GET', 'POST'])
