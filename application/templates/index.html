@@ -1,29 +1,35 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
 
-{% block content %}
-  <h1>Hello, {{ current_user.username }}</h1>
-  {% if form%}
-    <form action="" method="post">
-      {{ form.hidden_tag() }}
-      <p>
-        {{ form.post.label }}
-        <br>
-        {{ form.post(cols=32, rows=4) }}
-        <br>
-        {% for error in form.post.errors %}
-          <span style="color: red;">[{{ error }}]</span>
-        {% endfor%}
-      </p>
-        {{ form.submit() }}
-    </form>
-  {% endif %}
-  {% for post in posts %}
-    {% include '_post.html' %}
-  {% endfor %}
-  {% if prev_url %}
-    <a href="{{ prev_url }}">Newer Posts</a>
-  {% endif %}
-  {% if next_url %}
-    <a href="{{ next_url }}">Older Posts</a>
-  {% endif %}
+{% block app_content %}
+    <h1>Hi, {{ current_user.username }}!</h1>
+    {% if form %}
+    {{ wtf.quick_form(form) }}
+    <br>
+    {% endif %}
+    {% for post in posts %}
+        {% include '_post.html' %}
+    {% endfor %}
+
+    <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        <li class="page-item {% if not prev_url %} disabled{% endif %}">
+          <a class="page-link disabled" href="{{ prev_url or '#' }}" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+            <span class="sr-only">Previous</span>
+          </a>
+        </li>
+        {% for n in range(pages) %}
+            <li class="page-item">
+                <a class="page-link" href=" {{ url_for('index', page=n+1) }}">{{ n + 1 }}</a>
+            </li>
+        {% endfor %}
+        <li class="page-item {% if not next_url %} disabled{% endif %}">
+          <a class="page-link" href="{{ next_url or '#' }}" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+            <span class="sr-only">Next</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
 {% endblock %}

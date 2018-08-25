@@ -1,12 +1,18 @@
+# standard library
+import os
+import logging
+from logging.handlers import SMTPHandler, RotatingFileHandler
+
+# flask extensions
 from flask import Flask
-from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
-import logging
-from logging.handlers import SMTPHandler, RotatingFileHandler
-import os
 from flask_mail import Mail
+from flask_bootstrap import Bootstrap
+
+# microblog
+from config import Config
 
 
 app = Flask(__name__)
@@ -17,6 +23,7 @@ login = LoginManager(app)
 login.login_view = 'login'
 login.login_message = 'Please log in'
 mail = Mail(app)
+bootstrap = Bootstrap(app)
 
 
 if not app.debug:
