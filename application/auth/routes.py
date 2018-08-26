@@ -1,14 +1,14 @@
 from flask import render_template, flash, redirect, url_for, request
-from application import db, app
+from application import db
 from application.auth import bp
 from application.auth.forms import (LoginForm, RegistrationForm,
-                               ResetPasswordRequestForm,
-                               ResetPasswordForm)
+                                    ResetPasswordRequestForm,
+                                    ResetPasswordForm)
 from flask_login import current_user, login_user, logout_user
 from application.models import User
 from werkzeug.urls import url_parse
 from datetime import datetime
-from application.auth.email import send_password_reset_email
+from application.email import send_password_reset_email
 
 
 @bp.route('/login', methods=['GET', 'POST'])
