@@ -34,7 +34,7 @@ class User(UserMixin, db.Model):
     )
 
     def __repr__(self):
-        return f'<User {self.username}>'
+        return '<The user is {}>'.format(self.username)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -118,7 +118,7 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
-        return f'<Post {self.body}>'
+        return '<Post {}>'.format(self.body)
 
 
 @login.user_loader
